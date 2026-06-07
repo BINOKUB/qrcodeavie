@@ -6,14 +6,28 @@
     <title>QR Code à Vie | Générateur Premium</title>
     
     <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     
     <link rel="stylesheet" href="style.css">
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0056b3">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+
+
 </head>
 <body>
 
     <header>
         <h1 data-lang="appTitle">QR Code à Vie</h1>
         <p data-lang="appSubtitle">Générateur Statique Premium. Aucun abonnement. 100% Privé.</p>
+        <button id="lang-toggle" class="btn-lang">FR / EN</button>
     </header>
 
     <main id="app-container">
@@ -29,7 +43,7 @@
                 
                 <hr>
                 
-                <a href="#" target="_blank" class="btn-stripe" data-lang="btnBuy">Acheter mon accès à vie (50$)</a>
+                <a href="#" target="_blank" class="btn-stripe" data-lang="btnBuy">Acheter mon accès à vie (10$)</a>
             </div>
         </section>
 
@@ -49,7 +63,7 @@
                         <input type="text" id="qr-url" data-lang="placeholderUrl" placeholder="ex: https://mon-site.com">
                     </div>
 
-                    <div id="tab-wifi" class="tab-content" style="display: none;">
+                    <div id="tab-wifi" class="tab-content">
                         <label data-lang="labelSsid">Nom du réseau (SSID)</label>
                         <input type="text" id="wifi-ssid">
                         
@@ -64,7 +78,7 @@
                         </select>
                     </div>
 
-                    <div id="tab-vcard" class="tab-content" style="display: none;">
+                    <div id="tab-vcard" class="tab-content">
                         <div class="grid-2-cols">
                             <div>
                                 <label data-lang="labelName">Prénom</label>
@@ -96,7 +110,15 @@
                             <label data-lang="labelStyle">Style des points :</label>
                             <select id="dot-style">
                                 <option value="square" data-lang="optSquare">Carrés</option>
-                                <option value="dots" data-lang="optDots">Arrondis</option>
+                                <option value="rounded" data-lang="optDots">Arrondis</option>
+                            </select>
+
+                           <label>Style du Cadre :</label>
+                            <select id="frame-style">
+                                <option value="none">Aucun</option>
+                                <option value="scan-me" selected>Cadre "Scan Me" (Bleu)</option>
+                                <option value="get-app">Cadre "Get the app" (Marine)</option>
+                                <option value="like-us">Cadre "Like us" (Turquoise)</option>
                             </select>
                         </div>
                         
@@ -110,8 +132,20 @@
                 </div>
 
                 <div class="preview-panel">
-                    <div id="qrcode-canvas">
+                    
+                    <div id="qr-frame-wrapper" class="frame-style-scan-me">
+                        
+                        <div class="frame-text-top" id="frame-text-top">
+                            <span id="frame-icon-top">👍</span> <span id="frame-label-top">Like us</span>
                         </div>
+
+                        <div id="qrcode-canvas">
+                            </div>
+                        
+                        <div class="frame-text-bottom" id="frame-text-bottom">
+                            <span id="frame-icon-bottom">📱</span> <span id="frame-label-bottom">Scan me</span>
+                        </div>
+                    </div>
                     
                     <div class="export-box">
                         <h3 data-lang="titleExport">💾 Exportation Haute Qualité</h3>
