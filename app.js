@@ -1,9 +1,18 @@
-/* Révision v1.0 - Le Cerveau Crypté et Générateur - app.js */
+/* Révision v1.3 - Gestion Dynamique des Cadres et Export HD - app.js */
 document.addEventListener('DOMContentLoaded', () => {
     
     // 1. Initialisation de la langue (depuis lang.js)
     if (typeof appliquerLangue === 'function') {
         appliquerLangue();
+    }
+
+    // Bouton de changement de langue
+    const btnLang = document.getElementById('lang-toggle');
+    if (btnLang) {
+        btnLang.addEventListener('click', () => {
+            const nouvelleLangue = langueCourante === 'fr' ? 'en' : 'fr';
+            appliquerLangue(nouvelleLangue);
+        });
     }
 
     // --- SECTION A : LE VIGILE (Passeport et Cryptage) ---
@@ -25,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const cleSaisie = vipKeyInput.value.trim();
         
         // La règle d'or : On prend les 7 premiers caractères, on les crypte, et on compare
-        // + On exige au moins 50 caractères de longueur totale.
         if (cleSaisie.length >= 50) {
             const prefixeCrypte = btoa(cleSaisie.substring(0, 7)); // btoa = Base64 Encode
             
@@ -65,14 +73,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Initialisation de la librairie QRCodeStyling
         const qrCode = new QRCodeStyling({
-            width: 300,
-            height: 300,
+            width: 250, // Légèrement réduit pour bien s'intégrer dans le cadre
+            height: 250,
             type: "svg", // SVG interne pour la meilleure qualité d'affichage
             data: "https://qrcodeavie.com",
             image: "",
             dotsOptions: {
                 color: "#000000",
-                type: "square" // square ou dots
+                type: "square" 
             },
             backgroundOptions: {
                 color: "#ffffff",
@@ -86,6 +94,38 @@ document.addEventListener('DOMContentLoaded', () => {
         // Affichage initial
         qrCode.append(document.getElementById("qrcode-canvas"));
 
+        // --- NOUVEAU : GESTION DYNAMIQUE DU CADRE ---
+       
+        const frameStyleSelect = document.getElementById('frame-style');
+        const qrFrameWrapper = document.getElementById('qr-frame-wrapper');
+        const iconBottom = document.getElementById('frame-icon-bottom');
+        const labelBottom = document.getElementById('frame-label-bottom');
+
+        frameStyleSelect.addEventListener('change', (e) => {
+            const styleChoisi = e.target.value;
+            
+            // On nettoie toutes les classes
+            qrFrameWrapper.className = '';
+            
+            if (styleChoisi === 'scan-me') {
+                qrFrameWrapper.classList.add('frame-style-scan-me');
+                iconBottom.textContent = '📱';
+                labelBottom.textContent = 'Scan me';
+            } 
+            else if (styleChoisi === 'get-app') {
+                qrFrameWrapper.classList.add('frame-style-get-app');
+                iconBottom.textContent = '🅰️'; // Icône d'application
+                labelBottom.textContent = 'Get the app';
+            }
+            else if (styleChoisi === 'like-us') {
+                qrFrameWrapper.classList.add('frame-style-like-us');
+                // L'icône du haut est déjà en dur dans le HTML (👍 Like us)
+            }
+            // Si 'none', il reste sans classe (état brut)
+        });
+
+
+
         // Gestionnaire du logo (Upload local)
         let logoBase64 = "";
         const logoInput = document.getElementById('logo-input');
@@ -95,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     logoBase64 = event.target.result;
-                    mettreAJourQR(); // Met à jour automatiquement quand on charge un logo
+                    mettreAJourQR(); // Met à jour automatiquement
                 };
                 reader.readAsDataURL(file);
             }
@@ -105,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
         function mettreAJourQR() {
             let finalData = "";
 
-            // 1. Déterminer le contenu selon l'onglet actif
             if (activeTab === 'tab-link') {
                 finalData = document.getElementById('qr-url').value.trim();
                 if (!finalData) finalData = "https://qrcodeavie.com";
@@ -123,16 +162,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const email = document.getElementById('vc-email').value.trim();
                 const entreprise = document.getElementById('vc-entreprise').value.trim();
                 
-                // Formatage strict de la vCard
                 finalData = `BEGIN:VCARD\nVERSION:3.0\nN:${nom};${prenom};;;\nFN:${prenom} ${nom}\nORG:${entreprise}\nTEL:${tel}\nEMAIL:${email}\nEND:VCARD`;
             }
 
-            // 2. Récupérer les styles
             const colorDark = document.getElementById('color-dark').value;
             const colorLight = document.getElementById('color-light').value;
             const dotStyle = document.getElementById('dot-style').value;
 
-            // 3. Appliquer à la librairie
             qrCode.update({
                 data: finalData,
                 image: logoBase64,
@@ -146,20 +182,41 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Action du bouton "Mettre à jour"
         document.getElementById('update-qr-btn').addEventListener('click', mettreAJourQR);
 
-        // --- SECTION C : EXPORTATION ---
+        // --- SECTION C : EXPORTATION AVEC HTML2CANVAS ---
+        
+        // Fonction globale de téléchargement d'image (Cadre Inclus)
+        // Fonction globale de téléchargement d'image (Cadre Inclus)
+        function telechargerCadre(format) {
+            const wrapper = document.getElementById('qr-frame-wrapper');
+            
+            // L'astuce : Fond blanc forcé pour le JPG, Transparence préservée pour le PNG
+            const couleurDeFond = format === 'jpg' ? '#ffffff' : null;
+            
+            html2canvas(wrapper, {
+                backgroundColor: couleurDeFond, 
+                scale: 3 // Échelle x3 pour une très haute définition
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `QR_Code_Premium.${format}`;
+                const mimeType = format === 'jpg' ? 'jpeg' : 'png';
+                link.href = canvas.toDataURL(`image/${mimeType}`);
+                link.click();
+            });
+        }
+
         document.getElementById('dl-png').addEventListener('click', () => {
-            qrCode.download({ name: "QR_Code", extension: "png" });
+            telechargerCadre('png');
         });
 
         document.getElementById('dl-jpg').addEventListener('click', () => {
-            qrCode.download({ name: "QR_Code", extension: "jpeg" });
+            telechargerCadre('jpg');
         });
 
+        // Le SVG exporte uniquement le vecteur pur pour les imprimeurs professionnels
         document.getElementById('dl-svg').addEventListener('click', () => {
-            qrCode.download({ name: "QR_Code", extension: "svg" });
+            qrCode.download({ name: "QR_Code_Pur", extension: "svg" });
         });
     }
 });
