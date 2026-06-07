@@ -509,3 +509,37 @@ input[type="color"] {
     border: 2px solid #00f3ff; /* Rappel de ta charte visuelle */
     border-radius: 8px;
 }
+
+/* =========================================
+   CORRECTION : Bouton Accès Générateur Mobile
+   ========================================= */
+.btn-generateur {
+    display: inline-block;
+    padding: 15px 25px;
+    background-color: #00f3ff;
+    color: #050505;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    text-align: center;
+    transition: background 0.3s ease;
+    
+    /* Propriétés pour le responsive */
+    width: 100%;       /* Prend toute la largeur disponible */
+    max-width: 400px;  /* Empêche de devenir trop large sur bureau */
+    margin: 20px auto; /* Centre le bouton */
+    box-sizing: border-box;
+    
+    /* Gestion du texte */
+    font-size: 16px; 
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+/* Ajustement spécifique pour écrans très étroits */
+@media screen and (max-width: 480px) {
+    .btn-generateur {
+        padding: 12px 10px; /* Réduit le padding pour libérer de l'espace */
+        font-size: 14px;    /* Réduit la police pour éviter l'écrasement */
+    }
+}
