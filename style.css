@@ -1,4 +1,4 @@
-/* Révision v1.0 - Design Fintech (Bleu Mental) - style.css */
+/* Révision v1.2 - Intégration du Cadre Premium - style.css */
 :root {
     --bg-color: #f4f7f6; /* Gris très clair, ambiance propre */
     --card-bg: #ffffff;
@@ -266,19 +266,174 @@ input[type="color"] {
     padding-left: 3rem;
 }
 
+/* =========================================
+   LES CADRES PREMIUM (FRAMES)
+   ========================================= */
+
+/* Le Wrapper du Cadre */
+#qr-frame-wrapper {
+    margin-bottom: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+/* Style de base du Canvas (Quand il n'y a pas de cadre) */
 #qrcode-canvas {
     background: white;
-    padding: 1.5rem;
+    padding: 1rem; /* Réduit le padding pour éviter le côté baveux */
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.06);
     border: 1px solid var(--border-color);
-    margin-bottom: 2.5rem;
-    min-width: 300px;
-    min-height: 300px;
     display: flex;
     align-items: center;
     justify-content: center;
+    min-width: 300px;
+    min-height: 300px;
 }
+
+/* Le texte du cadre (Caché par défaut) */
+.frame-text {
+    display: none;
+}
+
+/* --- GABARIT : "SCAN ME" (Bleu Clair) --- */
+.frame-style-scan-me {
+    background-color: #00c3ff; /* Le bleu clair de la capture */
+    padding: 15px 15px 55px 15px; /* Espace en bas pour le texte */
+    border-radius: 12px;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(0, 195, 255, 0.3);
+}
+
+
+/* --- GABARIT : "GET THE APP" (Marine) --- */
+.frame-style-get-app {
+    background-color: transparent;
+    padding: 10px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+/* La bordure marine épaisse autour du canvas */
+.frame-style-get-app #qrcode-canvas {
+    border: 8px solid #1a2b4c;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: none;
+}
+/* La bulle avec la petite flèche pointant vers le haut */
+.frame-style-get-app .frame-text-bottom {
+    display: flex;
+    background: #1a2b4c;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    margin-top: 15px; 
+    position: relative;
+    font-weight: bold;
+    font-size: 1.2rem;
+    align-items: center;
+    gap: 8px;
+    font-family: "Segoe UI", sans-serif;
+}
+.frame-style-get-app .frame-text-bottom::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 0 10px 10px 10px;
+    border-style: solid;
+    border-color: transparent transparent #1a2b4c transparent;
+}
+/* On cache le texte du haut */
+.frame-style-get-app .frame-text-top { display: none; }
+
+
+/* --- GABARIT : "LIKE US" (Turquoise) --- */
+.frame-style-like-us {
+    background-color: transparent;
+    padding: 30px 10px 10px 10px; /* Espace en haut pour la bulle */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.frame-style-like-us #qrcode-canvas {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+}
+/* La bulle turquoise en haut avec la flèche vers le bas */
+.frame-style-like-us .frame-text-top {
+    display: flex;
+    background: #00e5ff;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    align-items: center;
+    gap: 8px;
+    position: absolute;
+    top: -15px; /* La bulle sort un peu du cadre */
+    z-index: 2;
+    font-family: "Segoe UI", sans-serif;
+}
+.frame-style-like-us .frame-text-top::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px 10px 0 10px;
+    border-style: solid;
+    border-color: #00e5ff transparent transparent transparent;
+}
+/* On cache le texte du bas */
+.frame-style-like-us .frame-text-bottom { display: none; }
+
+/* Adaptation du cadre Scan Me existant pour utiliser la nouvelle classe "bottom" */
+.frame-style-scan-me .frame-text-bottom {
+    display: flex;
+    position: absolute;
+    bottom: 15px;
+    color: white;
+    font-weight: bold;
+    font-size: 1.3rem;
+    align-items: center;
+    gap: 8px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+.frame-style-scan-me .frame-text-top { display: none; }
+
+
+
+/* Quand le canvas est dans le cadre Scan Me, on lui enlève ses bordures */
+.frame-style-scan-me #qrcode-canvas {
+    border: none;
+    box-shadow: none;
+    border-radius: 8px 8px 0 0; /* Arrondi juste en haut */
+    padding: 10px; /* On resserre le labyrinthe */
+}
+
+/* On affiche le texte pour ce cadre spécifique */
+.frame-style-scan-me .frame-text {
+    display: flex;
+    position: absolute;
+    bottom: 15px;
+    color: white;
+    font-weight: bold;
+    font-size: 1.3rem;
+    align-items: center;
+    gap: 8px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ========================================= */
 
 .export-box { 
     width: 100%; 
@@ -325,4 +480,20 @@ input[type="color"] {
         border-top: 1px solid var(--border-color); 
         padding-top: 3rem; 
     }
+}
+
+/* Bouton de langue */
+.btn-lang {
+    margin-top: 1rem;
+    padding: 0.4rem 1rem;
+    background: transparent;
+    color: var(--mental-blue);
+    border: 2px solid var(--mental-blue);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+.btn-lang:hover {
+    background: var(--mental-blue);
+    color: white;
 }
