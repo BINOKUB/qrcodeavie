@@ -504,9 +504,12 @@ input[type="color"] {
 }
 
 .qr-image {
-    max-width: 200px; /* Ajuste la taille selon tes besoins */
-    height: auto;
-    border: 2px solid #00f3ff; /* Rappel de ta charte visuelle */
+    display: block;      /* Force le comportement en bloc */
+    width: 100%;         /* Prend 100% de la largeur du conteneur parent */
+    max-width: 200px;    /* Taille maximale fixe : ne dépassera jamais 200px */
+    height: auto;        /* Maintient les proportions */
+    margin: 0 auto;      /* Centre l'image */
+    border: 2px solid #00f3ff;
     border-radius: 8px;
 }
 
