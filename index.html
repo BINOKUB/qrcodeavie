@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code à Vie | Générateur Premium</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1 data-lang="appTitle">QR Code à Vie</h1>
+        <p data-lang="appSubtitle">Générateur Statique Premium. Aucun abonnement. 100% Privé.</p>
+    </header>
+
+    <main id="app-container">
+        
+        <section id="bloc-vente" class="active">
+            <div class="lock-box">
+                <h2 data-lang="lockTitle">Accès Sécurisé</h2>
+                <p data-lang="lockDesc">Entrez votre clé d'accès à vie pour utiliser le générateur.</p>
+                
+                <input type="text" id="vip-key" placeholder="Ex: XXXX-VIP2026" autocomplete="off">
+                <button id="unlock-btn" class="btn-primary" data-lang="btnUnlock">Déverrouiller le Générateur</button>
+                <p id="error-msg" class="hidden-error" data-lang="errorMsg">Clé invalide ou accès refusé.</p>
+                
+                <hr>
+                
+                <a href="#" target="_blank" class="btn-stripe" data-lang="btnBuy">Acheter mon accès à vie (10$)</a>
+            </div>
+        </section>
+
+        <section id="bloc-generateur" style="display: none;">
+            
+            <div class="generator-grid">
+                
+                <div class="controls-panel">
+                    
+                    <div class="tabs">
+                        <button class="tab-btn active" data-target="tab-link" data-lang="tabLink">Lien / Texte</button>
+                        <button class="tab-btn" data-target="tab-wifi" data-lang="tabWifi">Réseau Wi-Fi</button>
+                        <button class="tab-btn" data-target="tab-vcard" data-lang="tabVcard">Contact (vCard)</button>
+                    </div>
+
+                    <div id="tab-link" class="tab-content active">
+                        <input type="text" id="qr-url" data-lang="placeholderUrl" placeholder="ex: https://mon-site.com">
+                    </div>
+
+                    <div id="tab-wifi" class="tab-content" style="display: none;">
+                        <label data-lang="labelSsid">Nom du réseau (SSID)</label>
+                        <input type="text" id="wifi-ssid">
+                        
+                        <label data-lang="labelWifiPass">Mot de passe</label>
+                        <input type="text" id="wifi-pass">
+                        
+                        <label data-lang="labelWifiType">Type de sécurité</label>
+                        <select id="wifi-type">
+                            <option value="WPA">WPA/WPA2</option>
+                            <option value="WEP">WEP</option>
+                            <option value="nopass">Aucune</option>
+                        </select>
+                    </div>
+
+                    <div id="tab-vcard" class="tab-content" style="display: none;">
+                        <div class="grid-2-cols">
+                            <div>
+                                <label data-lang="labelName">Prénom</label>
+                                <input type="text" id="vc-prenom">
+                            </div>
+                            <div>
+                                <label data-lang="labelLastname">Nom</label>
+                                <input type="text" id="vc-nom">
+                            </div>
+                        </div>
+                        <label data-lang="labelPhone">Téléphone</label>
+                        <input type="tel" id="vc-tel">
+                        <label data-lang="labelEmail">Courriel</label>
+                        <input type="email" id="vc-email">
+                        <label data-lang="labelCompany">Entreprise</label>
+                        <input type="text" id="vc-entreprise">
+                    </div>
+
+                    <div class="customization-box">
+                        <h3 data-lang="titleCustom">🎨 Personnalisation</h3>
+                        
+                        <div class="grid-2-cols align-center">
+                            <label data-lang="labelColorDark">Couleur des motifs :</label>
+                            <input type="color" id="color-dark" value="#000000">
+                            
+                            <label data-lang="labelColorLight">Couleur de fond :</label>
+                            <input type="color" id="color-light" value="#ffffff">
+                            
+                            <label data-lang="labelStyle">Style des points :</label>
+                            <select id="dot-style">
+                                <option value="square" data-lang="optSquare">Carrés</option>
+                                <option value="dots" data-lang="optDots">Arrondis</option>
+                            </select>
+                        </div>
+                        
+                        <div class="logo-upload">
+                            <label for="logo-input" class="btn-secondary" data-lang="btnLogo">Ajouter un Logo</label>
+                            <input type="file" id="logo-input" accept="image/png, image/jpeg" style="display: none;">
+                        </div>
+                    </div>
+
+                    <button id="update-qr-btn" class="btn-primary" data-lang="btnGenerate">Mettre à jour le QR Code</button>
+                </div>
+
+                <div class="preview-panel">
+                    <div id="qrcode-canvas">
+                        </div>
+                    
+                    <div class="export-box">
+                        <h3 data-lang="titleExport">💾 Exportation Haute Qualité</h3>
+                        <div class="export-buttons">
+                            <button id="dl-png" class="btn-export" data-lang="btnPng">PNG (Web)</button>
+                            <button id="dl-jpg" class="btn-export" data-lang="btnJpg">JPG (Standard)</button>
+                            <button id="dl-svg" class="btn-export" data-lang="btnSvg">SVG (Impression Pro)</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script src="lang.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
