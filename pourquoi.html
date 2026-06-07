@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pourquoi QR Code à Vie ? | Lifetime QR Code</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Correction CSS pour empêcher le scroll et limiter l'image */
+        body { overflow-x: hidden; } 
+        .qr-container { width: 100%; display: flex; justify-content: center; margin-top: 1rem; }
+        .qr-image { max-width: 200px; width: 100%; height: auto; border: 2px solid #00f3ff; border-radius: 8px; }
+        .btn-responsive { display: inline-block; padding: 1.5rem 3rem; font-size: 1.3rem; text-decoration: none; background-color: var(--mental-blue); color: white; border-radius: 6px; max-width: 90%; word-wrap: break-word; }
+    </style>
 </head>
 <body>
 
@@ -59,23 +66,16 @@
         <!-- Section Contact -->
         <section style="margin-top: 6rem; text-align: center; padding: 4rem; background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border-color);">
             <h2 style="margin-bottom: 1rem;">Besoin d'aide ? / Need Assistance?</h2>
-            <p style="margin-bottom: 3rem;">Scannez pour me contacter / Scan to reach out</p>
-            <div style="width: 250px; height: 250px; background: #f9f9f9; margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 3px dashed var(--mental-blue); border-radius: 12px;">
-                <span style="color: var(--text-muted); font-weight: bold;">
-
-    <div class="qr-container">
-    <a href="https://www.facebook.com/qrcodeavie" target="_blank" rel="noopener">
-        <img src="QR_Code_Premium.png" alt="Scanner pour visiter notre page Facebook QR Code à Vie" class="qr-image">
-    </a>
-</div>
-                    
-                    
-                </span>
+            <p style="margin-bottom: 2rem;">Scannez pour me contacter / Scan to reach out</p>
+            <div class="qr-container">
+                <a href="https://www.facebook.com/qrcodeavie" target="_blank" rel="noopener">
+                    <img src="QR_Code_Premium.png" alt="Scanner pour visiter notre page Facebook" class="qr-image">
+                </a>
             </div>
         </section>
 
         <div style="text-align: center; margin-top: 5rem;">
-            <a href="index.html" class="btn-primary" style="padding: 1.5rem 4rem; font-size: 1.3rem; text-decoration: none;">Accéder au générateur / Access Generator</a>
+            <a href="index.html" class="btn-responsive">Accéder au générateur / Access Generator</a>
         </div>
     </main>
 
