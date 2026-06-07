@@ -4,6 +4,7 @@ const dictionnaire = {
     fr: {
         appTitle: "QR Code à Vie",
         appSubtitle: "Générateur Statique Premium. Aucun abonnement. 100% Privé.",
+        linkPourquoi: "Pourquoi nous choisir ?",
         
         // Bloc A : Vente & Déverrouillage
         lockTitle: "Accès Sécurisé",
@@ -47,6 +48,7 @@ const dictionnaire = {
     en: {
         appTitle: "Lifetime QR Code",
         appSubtitle: "Premium Static Generator. No subscriptions. 100% Private.",
+        linkPourquoi: "Why choose us?",
         
         // Bloc A : Vente & Déverrouillage
         lockTitle: "Secure Access",
