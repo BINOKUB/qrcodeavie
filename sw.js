@@ -15,8 +15,17 @@ self.addEventListener('install', (e) => {
   );
 });
 
+// Ton nouveau bloc de gestion des requêtes
 self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((res) => res || fetch(e.request))
-  );
+  // 1. Priorité au réseau pour la page d'accueil (index)
+  if (e.request.url.endsWith('index.html') || e.request.url.endsWith('/')) {
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match(e.request))
+    );
+  } else {
+    // 2. Priorité au cache pour les ressources statiques (rapide)
+    e.respondWith(
+      caches.match(e.request).then((res) => res || fetch(e.request))
+    );
+  }
 });
