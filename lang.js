@@ -9,7 +9,7 @@ const dictionnaire = {
         lockTitle: "Accès Sécurisé",
         lockDesc: "Entrez votre clé d'accès à vie pour utiliser le générateur.",
         btnUnlock: "Déverrouiller le Générateur",
-        btnBuy: "Acheter mon accès à vie (10$)",
+        btnBuy: "Acheter mon accès à vie (50$)",
         errorMsg: "Clé invalide ou accès refusé.",
         
         // Bloc B : Le Générateur (Onglets)
@@ -52,7 +52,7 @@ const dictionnaire = {
         lockTitle: "Secure Access",
         lockDesc: "Enter your lifetime access key to use the generator.",
         btnUnlock: "Unlock Generator",
-        btnBuy: "Get lifetime access ($10)",
+        btnBuy: "Get lifetime access ($50)",
         errorMsg: "Invalid key or access denied.",
         
         // Bloc B : Le Générateur (Onglets)
@@ -90,14 +90,21 @@ const dictionnaire = {
 };
 
 // Fonction pour appliquer la langue au chargement (par défaut basé sur le navigateur)
-function appliquerLangue() {
-    const lang = navigator.language.startsWith('fr') ? 'fr' : 'en';
-    const textes = dictionnaire[lang];
+// Fonction globale de changement de langue
+// Fonction globale de changement de langue
+let langueCourante = localStorage.getItem('qr_langue') || (navigator.language.startsWith('fr') ? 'fr' : 'en');
+
+function appliquerLangue(langForcee) {
+    if (langForcee) {
+        langueCourante = langForcee;
+        localStorage.setItem('qr_langue', langueCourante);
+    }
+    
+    const textes = dictionnaire[langueCourante];
 
     document.querySelectorAll('[data-lang]').forEach(element => {
         const cle = element.getAttribute('data-lang');
         if (textes[cle]) {
-            // Si c'est un input/textarea, on modifie le placeholder, sinon le texte interne
             if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
                 element.placeholder = textes[cle];
             } else {
@@ -105,4 +112,11 @@ function appliquerLangue() {
             }
         }
     });
+
+    // LA MAGIE ICI : Mise à jour dynamique du texte du bouton
+    const btnLang = document.getElementById('lang-toggle');
+    if (btnLang) {
+        // Si on est en FR, le bouton propose "EN". Si on est en EN, il propose "FR".
+        btnLang.textContent = langueCourante === 'fr' ? 'EN' : 'FR';
+    }
 }
