@@ -1,4 +1,4 @@
-const CACHE_NAME = 'qrcode-v2';
+const CACHE_NAME = 'qrcode-v3';
 const ASSETS = [
   './index.html',
   './style.css',
