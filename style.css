@@ -497,3 +497,15 @@ input[type="color"] {
     background: var(--mental-blue);
     color: white;
 }
+
+.qr-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.qr-image {
+    max-width: 200px; /* Ajuste la taille selon tes besoins */
+    height: auto;
+    border: 2px solid #00f3ff; /* Rappel de ta charte visuelle */
+    border-radius: 8px;
+}
