@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- SECTION A : LE VIGILE (Passeport et Cryptage) ---
+    // --- SECTION A :  ---
     const blocVente = document.getElementById('bloc-vente');
     const blocGenerateur = document.getElementById('bloc-generateur');
     const unlockBtn = document.getElementById('unlock-btn');
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initialiserGenerateur(); // Démarre le moteur seulement si accès autorisé
     }
 
-    // Tentative de déverrouillage manuel (Le test du Miroir Base64)
+    // 
     unlockBtn.addEventListener('click', () => {
         const cleSaisie = vipKeyInput.value.trim();
         
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const prefixeCrypte = btoa(cleSaisie.substring(0, 7)); // 
             
             if (prefixeCrypte === 'UVItUFJPLQ==') {
-                // VICTOIRE : Accès accordé
+                // 
                 localStorage.setItem('qr_vip_access', 'valide');
                 blocVente.classList.remove('active');
                 blocGenerateur.style.display = 'block';
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // ECHEC : Si on arrive ici, la clé est mauvaise
+        // ECHEC : 
         errorMsg.style.display = 'block';
     });
 
