@@ -33,9 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
     unlockBtn.addEventListener('click', () => {
         const cleSaisie = vipKeyInput.value.trim();
         
-        // La règle d'or : On prend les 7 premiers caractères, on les crypte, et on compare
+        // 
         if (cleSaisie.length >= 50) {
-            const prefixeCrypte = btoa(cleSaisie.substring(0, 7)); // btoa = Base64 Encode
+            const prefixeCrypte = btoa(cleSaisie.substring(0, 7)); // 
             
             if (prefixeCrypte === 'UVItUFJPLQ==') {
                 // VICTOIRE : Accès accordé
