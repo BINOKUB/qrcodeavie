@@ -1,3 +1,23 @@
+/* Force tous les éléments à calculer leur largeur correctement */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Empêche le conteneur principal de déborder de l'écran du téléphone */
+body, html {
+    width: 100%;
+    overflow-x: hidden; /* Coupe tout débordement horizontal parasite */
+    display: flex;
+    justify-content: center; /* Centre parfaitement le contenu */
+    align-items: center;
+}
+
+
+
+
+
 /* Révision v1.2 - Intégration du Cadre Premium - style.css */
 :root {
     --bg-color: #f4f7f6; /* Gris très clair, ambiance propre */
