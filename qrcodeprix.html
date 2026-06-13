@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Générateur Industriel 1D/2D - QR Code à Vie</title>
+    <script src="https://cdn.jsdelivr.net/npm/bwip-js@3.0.4/dist/bwip-js-min.js"></script>
+    <style>
+        /* Design Industriel Sombre - Standard QR Code à Vie / JAK-21 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: #111111;
+            padding: 15px 20px;
+            border-bottom: 2px solid #222222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            color: #00f3ff;
+            letter-spacing: 1px;
+        }
+
+        header .badge {
+            background-color: #222222;
+            color: #aaaaaa;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            border-radius: 3px;
+            border: 1px solid #333333;
+        }
+
+        /* Split-Screen Layout */
+        .main-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 54px);
+        }
+
+        /* PANNEAU GAUCHE */
+        .left-panel {
+            width: 40%;
+            background-color: #111111;
+            border-right: 2px solid #222222;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            color: #aaaaaa;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        select, input[type="text"] {
+            background-color: #050505;
+            border: 1px solid #333333;
+            color: #ffffff;
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        select:focus, input[type="text"]:focus {
+            border-color: #00f3ff;
+        }
+
+        .btn-generate {
+            background-color: #00f3ff;
+            color: #050505;
+            border: none;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-generate:hover {
+            background-color: #00b8c4;
+        }
+
+        /* PANNEAU DROITE */
+        .right-panel {
+            width: 60%;
+            background-color: #050505;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            gap: 25px;
+        }
+
+        .display-box {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.05);
+            width: 100%;
+            max-width: 550px;
+            min-height: 350px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            display: none;
+        }
+
+        #placeholder-text {
+            color: #555555;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .export-actions {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .btn-export {
+            flex: 1;
+            padding: 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            background-color: #111111;
+            color: #ffffff;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-export:hover {
+            border-color: #00f3ff;
+            color: #00f3ff;
+        }
+
+        .error-message {
+            color: #ff3333;
+            background-color: rgba(255, 51, 51, 0.1);
+            border: 1px solid #ff3333;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            display: none;
+            width: 100%;
+            white-space: pre-line;
+        }
+
+        @media print {
+            body, .main-container, .right-panel { background-color: #ffffff !important; color: #000000 !important; }
+            header, .left-panel, .export-actions { display: none !important; }
+            .right-panel { width: 100% !important; padding: 0 !important; }
+            .display-box { box-shadow: none !important; padding: 0 !important; margin-top: 50px; }
+            canvas { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>QR CODE À VIE - MULTI-GÉNÉRATEUR INDUSTRIEL</h1>
+       <div class="badge"><a href="https://www.qrcodeavie.com" target="_new"><h1>REVENIR &Agrave; QR CODE &Agrave; VIE</h1></a></div> 
+
+    </header>
+
+    <div class="main-container">
+        <div class="left-panel">
+            <div class="form-group">
+                <label for="barcode-type">1. Type de code-barres (24 Formats Historiques & Modernes)</label>
+                <select id="barcode-type">
+                    <optgroup label="--- CODES 2D MATRICIELS ---">
+                        <option value="datamatrix" selected>Data Matrix (Carré Industriel)</option>
+                        <option value="gs1datamatrix">GS1 Data Matrix (Distribution Mondiale)</option>
+                        <option value="azteccode">Aztec Code (Billets / Transport)</option>
+                        <option value="pdf417">PDF417 (Codes Empilés / Douanes)</option>
+                    </optgroup>
+                    <optgroup label="--- COMMERCE & DISTRIBUTION (1D) ---">
+                        <option value="code128">Code 128 (Logistique Moderne - Auto)</option>
+                        <option value="code128_a">Code 128 Type A (Majuscules & Commandes)</option>
+                        <option value="code128_b">Code 128 Type B (Standard ASCII)</option>
+                        <option value="code128_c">Code 128 Type C (Chiffres Compacts)</option>
+                        <option value="ean13">EAN-13 (Standard Supermarché Europe/Canada)</option>
+                        <option value="ean8">EAN-8 (Produits de Petite Taille)</option>
+                        <option value="upca">UPC-A (Standard États-Unis Magasins)</option>
+                        <option value="upce">UPC-E (Version Réduite UPC - 8 chiffres)</option>
+                    </optgroup>
+                    <optgroup label="--- CODES INDUSTRIELS & LOGISTIQUE ---">
+                        <option value="code39">Code 39 (Alphanumérique Classique)</option>
+                        <option value="code39ext">Code 39 Extended (ASCII Complet)</option>
+                        <option value="code93">Code 93 (Haute Densité Compact)</option>
+                        <option value="code93ext">Code 93 Extended</option>
+                        <option value="code11">Code 11 (Télécommunications Historiques)</option>
+                        <option value="itf14">ITF-14 (Cartons de Transport Lourds)</option>
+                        <option value="interleaved2of5">Interleaved 2 of 5 / ITF (Chiffres Uniquement)</option>
+                        <option value="rationalizedCodabar">Codabar (Bibliothèques / Banques de sang)</option>
+                    </optgroup>
+                    <optgroup label="--- SPÉCIFIQUES & POSTAUX ---">
+                        <option value="pharmacode">Pharmacode (Contrôle Emballages Médicaux)</option>
+                        <option value="msi">MSI / Plessey (Inventaire Entreprise)</option>
+                        <option value="plessey">Plessey Code (Historique Royaume-Uni)</option>
+                        <option value="postnet">Postnet (Tri Postal US Mail - Barres Courtes)</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="barcode-text">2. Saisir les données à encoder</label>
+                <input type="text" id="barcode-text" placeholder="Entrez vos données">
+            </div>
+
+            <div id="error-zone" class="error-message"></div>
+
+            <button class="btn-generate" onclick="genererLeCode()">Générer le code</button>
+        </div>
+
+        <div class="right-panel">
+            <div class="display-box">
+                <span id="placeholder-text">En attente de génération...</span>
+                <canvas id="barcode-canvas"></canvas>
+            </div>
+            
+            <div class="export-actions">
+                <button class="btn-export" onclick="exporterPNG()">Télécharger PNG</button>
+                <button class="btn-export" onclick="exporterPDF()">Imprimer PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Table des configurations avec identifiants et exemples parfaitement calibrés pour le compilateur PostScript de BWIP-JS
+        const configurationsFormats = {
+            "datamatrix": { exemple: "BINOKUB-MATRIX-2026", aide: "Matrice carrée 2D. Texte et chiffres libres." },
+            "gs1datamatrix": { exemple: "(01)00123456789012(10)LOT123", aide: "Matrice 2D. Format GS1 avec identifiants entre parenthèses." },
+            "azteccode": { exemple: "AZTEC-PASS-MATANE", aide: "Matrice 2D compacte avec cible centrale." },
+            "pdf417": { exemple: "DOUANE-ID-87492-CANADA", aide: "Code 2D bidimensionnel empilé." },
+            
+            "code128": { exemple: "HARDBEAT-STUDIO-64", aide: "Texte ou chiffres (Sélection automatique)." },
+            "code128_a": { exemple: "TEXTE MAJUSCULE 123", aide: "Lettres majuscules et chiffres uniquement." },
+            "code128_b": { exemple: "Code128_Standard", aide: "Minuscules, majuscules et chiffres." },
+            "code128_c": { exemple: "11223344", aide: "Nombre pair de chiffres uniquement." },
+            "ean13": { exemple: "6111234567895", aide: "Exige exactement 13 chiffres." },
+            "ean8": { exemple: "12345670", aide: "Exige exactement 8 chiffres." },
+            "upca": { exemple: "012345678905", aide: "Exige exactement 12 chiffres." },
+            "upce": { exemple: "01234565", aide: "Exige exactement 7 ou 8 chiffres sous BWIP-JS (Système + Données + Clé)." },
+            
+            "code39": { exemple: "PRODUIT-39", aide: "Majuscules, chiffres et symboles - . $ / + %" },
+            "code39ext": { exemple: "Produit_39_Ext!", aide: "ASCII complet (Minuscules acceptées)." },
+            "code93": { exemple: "LOGISTIQUE93", aide: "Majuscules et chiffres." },
+            "code93ext": { exemple: "Logistique93_Ext!", aide: "ASCII complet haute densité." },
+            "code11": { exemple: "123-456-7", aide: "Chiffres et tiret uniquement." },
+            "itf14": { exemple: "10012345678902", aide: "Exige exactement 14 chiffres." },
+            "interleaved2of5": { exemple: "1234567890", aide: "Chiffres uniquement en quantité paire." },
+            "rationalizedCodabar": { exemple: "A12345B", aide: "Doit débuter et finir par A, B, C ou D." },
+            
+            "pharmacode": { exemple: "12345", aide: "Chiffres uniquement (Entier entre 3 et 131070)." },
+            "msi": { exemple: "987654321", aide: "Chiffres uniquement." },
+            "plessey": { exemple: "123456", aide: "Chiffres et lettres A-F uniquement." },
+            "postnet": { exemple: "12345", aide: "Chiffres de code postal américain uniquement." }
+        };
+
+        document.getElementById('barcode-type').addEventListener('change', function() {
+            const format = this.value;
+            const inputTexte = document.getElementById('barcode-text');
+            
+            if (configurationsFormats[format]) {
+                inputTexte.value = configurationsFormats[format].exemple;
+                inputTexte.placeholder = "Exigence : " + configurationsFormats[format].aide;
+                
+                document.getElementById('barcode-canvas').style.display = 'none';
+                document.getElementById('placeholder-text').style.display = 'block';
+                document.getElementById('error-zone').style.display = 'none';
+                
+                genererLeCode();
+            }
+        });
+
+        function genererLeCode() {
+            let type = document.getElementById('barcode-type').value;
+            const texte = document.getElementById('barcode-text').value.trim();
+            const errorZone = document.getElementById('error-zone');
+            const placeholderText = document.getElementById('placeholder-text');
+            const canvas = document.getElementById('barcode-canvas');
+            
+            errorZone.style.display = 'none';
+            errorZone.innerText = '';
+
+            if (texte === '') {
+                afficherErreur("Erreur : La case de données est vide.");
+                return;
+            }
+
+            try {
+                canvas.innerHTML = '';
+                
+                // Redirection intelligente des sous-modes 128 vers l'encodeur unique de BWIP
+                let forceMode128 = "";
+                if (type.startsWith("code128_")) {
+                    forceMode128 = type.split("_")[1].toUpperCase(); // Extraire 'A', 'B' ou 'C'
+                    type = "code128"; // Forcer l'utilisation du vrai encodeur BWIP
+                }
+
+                const estFormat2D = (type === 'datamatrix' || type === 'gs1datamatrix' || type === 'azteccode' || type === 'pdf417');
+
+                let options = {
+                    bcid: type,
+                    text: texte,
+                    scale: estFormat2D ? 4 : 2, 
+                    includetext: !estFormat2D,   
+                    textxalign: 'center',
+                    textsize: 10
+                };
+
+                // Si l'utilisateur a choisi Code 128 A, B ou C, on lui passe la commande de bas niveau PostScript
+                if (forceMode128 !== "") {
+                    options.props = `code128mode=${forceMode128}`;
+                }
+
+                if (!estFormat2D) {
+                    options.height = 15; 
+                }
+
+                bwipjs.toCanvas(canvas, options);
+
+                placeholderText.style.display = 'none';
+                canvas.style.display = 'block';
+            } catch (error) {
+                const guide = configurationsFormats[document.getElementById('barcode-type').value] ? `\nFormat requis : ${configurationsFormats[document.getElementById('barcode-type').value].aide}` : '';
+                afficherErreur(`Erreur technique : ${error.message || error}${guide}`);
+            }
+        }
+
+        function afficherErreur(message) {
+            const errorZone = document.getElementById('error-zone');
+            const placeholderText = document.getElementById('placeholder-text');
+            const canvas = document.getElementById('barcode-canvas');
+            
+            errorZone.innerText = message;
+            errorZone.style.display = 'block';
+            canvas.style.display = 'none';
+            placeholderText.style.display = 'block';
+        }
+
+        function exporterPNG() {
+            const canvas = document.getElementById('barcode-canvas');
+            if (!canvas || canvas.style.display === 'none') return;
+
+            const pngUrl = canvas.toDataURL('image/png');
+            const downloadLink = document.createElement('a');
+            downloadLink.href = pngUrl;
+            downloadLink.download = `code_${document.getElementById('barcode-type').value}_${document.getElementById('barcode-text').value.trim()}.png`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+
+        function exporterPDF() {
+            const canvas = document.getElementById('barcode-canvas');
+            if (!canvas || canvas.style.display === 'none') return;
+            window.print();
+        }
+
+        window.onload = function() {
+            document.getElementById('barcode-type').dispatchEvent(new Event('change'));
+        };
+    </script>
+</body>
+</html>
