@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Générateur Industriel 1D/2D - QR Code à Vie</title>
+    <title>Multi-Générateur Industriel 1D/2D - QR Code à Vie (Mode Planche)</title>
     <script src="https://cdn.jsdelivr.net/npm/bwip-js@3.0.4/dist/bwip-js-min.js"></script>
     <style>
         /* Design Industriel Sombre - Standard QR Code à Vie / JAK-21 */
@@ -45,6 +45,11 @@
             font-size: 0.8rem;
             border-radius: 3px;
             border: 1px solid #333333;
+        }
+
+        header .badge a {
+            color: #00f3ff;
+            text-decoration: none;
         }
 
         /* Split-Screen Layout */
@@ -112,56 +117,86 @@
             background-color: #00b8c4;
         }
 
+        .btn-clear {
+            background-color: #222222;
+            color: #ff3333;
+            border: 1px solid #ff3333;
+            padding: 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
         /* PANNEAU DROITE */
         .right-panel {
             width: 60%;
             background-color: #050505;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            gap: 25px;
+            padding: 25px;
+            gap: 20px;
+            overflow-y: auto;
         }
 
-        .display-box {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 4px;
-            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.05);
-            width: 100%;
-            max-width: 550px;
-            min-height: 350px;
+        .panel-header {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            overflow: auto;
+            border-bottom: 1px solid #222222;
+            padding-bottom: 10px;
         }
 
-        canvas {
+        /* Grille d'impression 3 étiquettes de large (Style Planche Avery) */
+        .sheet-preview {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 4px;
+            width: 100%;
+            min-height: 80vh;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            align-content: start;
+        }
+
+        /* Style unitaire de chaque étiquette */
+        .ticket-label {
+            background-color: #ffffff;
+            color: #000000;
+            border: 1px dashed #cccccc;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 130px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .ticket-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 5px;
+        }
+
+        .ticket-barcode-box canvas {
             max-width: 100%;
             height: auto;
-            display: none;
-        }
-
-        #placeholder-text {
-            color: #555555;
-            font-size: 1rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            display: block;
         }
 
         .export-actions {
             display: flex;
             gap: 15px;
-            width: 100%;
-            max-width: 400px;
         }
 
         .btn-export {
-            flex: 1;
-            padding: 12px;
+            padding: 12px 20px;
             font-size: 0.9rem;
             font-weight: bold;
             border: 1px solid #333333;
@@ -190,20 +225,37 @@
         }
 
         @media print {
-            body, .main-container, .right-panel { background-color: #ffffff !important; color: #000000 !important; }
-            header, .left-panel, .export-actions { display: none !important; }
-            .right-panel { width: 100% !important; padding: 0 !important; }
-            .display-box { box-shadow: none !important; padding: 0 !important; margin-top: 50px; }
-            canvas { display: block !important; }
+            body, .main-container, .right-panel, .sheet-preview { 
+                background-color: #ffffff !important; 
+                color: #000000 !important; 
+                overflow: visible !important;
+                height: auto !important;
+            }
+            header, .left-panel, .panel-header, .export-actions { 
+                display: none !important; 
+            }
+            .right-panel { 
+                width: 100% !important; 
+                padding: 0 !important; 
+            }
+            .sheet-preview { 
+                padding: 0 !important; 
+                margin: 0 !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 12px !important;
+            }
+            .ticket-label {
+                border: 1px solid #eeeeee !important;
+                page-break-inside: avoid;
+            }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>QR CODE À VIE - MULTI-GÉNÉRATEUR INDUSTRIEL</h1>
-       <div class="badge"><a href="https://www.qrcodeavie.com" target="_new"><h1>REVENIR &Agrave; QR CODE &Agrave; VIE</h1></a></div> 
-
+        <h1>QR CODE À VIE - MULTI-GÉNÉRATEUR INDUSTRIEL (MODE PLANCHE)</h1>
+        <div class="badge"><a href="https://www.qrcodeavie.com" target="_new"><h1>REVENIR &Agrave; QR CODE &Agrave; VIE</h1></a></div> 
     </header>
 
     <div class="main-container">
@@ -251,26 +303,32 @@
                 <input type="text" id="barcode-text" placeholder="Entrez vos données">
             </div>
 
+            <div class="form-group">
+                <label for="barcode-price">3. Prix à afficher ($)</label>
+                <input type="text" id="barcode-price" placeholder="Ex: 19.99">
+            </div>
+
             <div id="error-zone" class="error-message"></div>
 
-            <button class="btn-generate" onclick="genererLeCode()">Générer le code</button>
+            <button class="btn-generate" onclick="ajouterEtiquetteALaPlanche()">➕ Ajouter à la planche</button>
+            <button class="btn-clear" onclick="viderLaPlanche()">Réinitialiser la feuille</button>
         </div>
 
         <div class="right-panel">
-            <div class="display-box">
-                <span id="placeholder-text">En attente de génération...</span>
-                <canvas id="barcode-canvas"></canvas>
+            <div class="panel-header">
+                <label>Aperçu de la planche Avery (Impression 3 étiquettes de large)</label>
+                <div class="export-actions">
+                    <button class="btn-export" onclick="window.print()">🖨️ Imprimer la Planche</button>
+                </div>
             </div>
             
-            <div class="export-actions">
-                <button class="btn-export" onclick="exporterPNG()">Télécharger PNG</button>
-                <button class="btn-export" onclick="exporterPDF()">Imprimer PDF</button>
-            </div>
+            <div class="sheet-preview" id="sheet-preview-zone">
+                </div>
         </div>
     </div>
 
     <script>
-        // Table des configurations avec identifiants et exemples parfaitement calibrés pour le compilateur PostScript de BWIP-JS
+        // Ta table de configuration ORIGINALE exacte
         const configurationsFormats = {
             "datamatrix": { exemple: "BINOKUB-MATRIX-2026", aide: "Matrice carrée 2D. Texte et chiffres libres." },
             "gs1datamatrix": { exemple: "(01)00123456789012(10)LOT123", aide: "Matrice 2D. Format GS1 avec identifiants entre parenthèses." },
@@ -301,6 +359,7 @@
             "postnet": { exemple: "12345", aide: "Chiffres de code postal américain uniquement." }
         };
 
+        // Écouteur basé STRICTEMENT sur 'barcode-type' comme ton fichier d'origine
         document.getElementById('barcode-type').addEventListener('change', function() {
             const format = this.value;
             const inputTexte = document.getElementById('barcode-text');
@@ -308,38 +367,49 @@
             if (configurationsFormats[format]) {
                 inputTexte.value = configurationsFormats[format].exemple;
                 inputTexte.placeholder = "Exigence : " + configurationsFormats[format].aide;
-                
-                document.getElementById('barcode-canvas').style.display = 'none';
-                document.getElementById('placeholder-text').style.display = 'block';
                 document.getElementById('error-zone').style.display = 'none';
-                
-                genererLeCode();
             }
         });
 
-        function genererLeCode() {
+        function ajouterEtiquetteALaPlanche() {
             let type = document.getElementById('barcode-type').value;
-            const texte = document.getElementById('barcode-text').value.trim();
+            const textInput = document.getElementById('barcode-text');
+            const texte = textInput.value.trim();
+            const prix = document.getElementById('barcode-price').value.trim() || "0.00";
             const errorZone = document.getElementById('error-zone');
-            const placeholderText = document.getElementById('placeholder-text');
-            const canvas = document.getElementById('barcode-canvas');
-            
+            const previewZone = document.getElementById('sheet-preview-zone');
+
             errorZone.style.display = 'none';
-            errorZone.innerText = '';
 
             if (texte === '') {
-                afficherErreur("Erreur : La case de données est vide.");
+                errorZone.innerText = "Erreur : La case de données est vide.";
+                errorZone.style.display = 'block';
                 return;
             }
 
             try {
-                canvas.innerHTML = '';
-                
-                // Redirection intelligente des sous-modes 128 vers l'encodeur unique de BWIP
+                // 1. Création de la vignette d'étiquette
+                const labelCard = document.createElement('div');
+                labelCard.className = 'ticket-label';
+
+                // 2. Ajout du Prix
+                const priceTag = document.createElement('div');
+                priceTag.className = 'ticket-price';
+                priceTag.innerText = prix.includes('$') ? prix : `$ ${prix}`;
+                labelCard.appendChild(priceTag);
+
+                // 3. Zone Canvas pour BWIP-JS
+                const barcodeBox = document.createElement('div');
+                barcodeBox.className = 'ticket-barcode-box';
+                const canvas = document.createElement('canvas');
+                barcodeBox.appendChild(canvas);
+                labelCard.appendChild(barcodeBox);
+
+                // 4. Extraction du mode Code 128 (A, B, C)
                 let forceMode128 = "";
                 if (type.startsWith("code128_")) {
-                    forceMode128 = type.split("_")[1].toUpperCase(); // Extraire 'A', 'B' ou 'C'
-                    type = "code128"; // Forcer l'utilisation du vrai encodeur BWIP
+                    forceMode128 = type.split("_")[1].toUpperCase();
+                    type = "code128"; 
                 }
 
                 const estFormat2D = (type === 'datamatrix' || type === 'gs1datamatrix' || type === 'azteccode' || type === 'pdf417');
@@ -353,7 +423,6 @@
                     textsize: 10
                 };
 
-                // Si l'utilisateur a choisi Code 128 A, B ou C, on lui passe la commande de bas niveau PostScript
                 if (forceMode128 !== "") {
                     options.props = `code128mode=${forceMode128}`;
                 }
@@ -362,46 +431,25 @@
                     options.height = 15; 
                 }
 
+                // Génération du rendu
                 bwipjs.toCanvas(canvas, options);
 
-                placeholderText.style.display = 'none';
-                canvas.style.display = 'block';
+                // 5. Ajout à la planche Avery
+                previewZone.appendChild(labelCard);
+
             } catch (error) {
                 const guide = configurationsFormats[document.getElementById('barcode-type').value] ? `\nFormat requis : ${configurationsFormats[document.getElementById('barcode-type').value].aide}` : '';
-                afficherErreur(`Erreur technique : ${error.message || error}${guide}`);
+                errorZone.innerText = `Erreur technique : ${error.message || error}${guide}`;
+                errorZone.style.display = 'block';
             }
         }
 
-        function afficherErreur(message) {
-            const errorZone = document.getElementById('error-zone');
-            const placeholderText = document.getElementById('placeholder-text');
-            const canvas = document.getElementById('barcode-canvas');
-            
-            errorZone.innerText = message;
-            errorZone.style.display = 'block';
-            canvas.style.display = 'none';
-            placeholderText.style.display = 'block';
+        function viderLaPlanche() {
+            document.getElementById('sheet-preview-zone').innerHTML = '';
+            document.getElementById('error-zone').style.display = 'none';
         }
 
-        function exporterPNG() {
-            const canvas = document.getElementById('barcode-canvas');
-            if (!canvas || canvas.style.display === 'none') return;
-
-            const pngUrl = canvas.toDataURL('image/png');
-            const downloadLink = document.createElement('a');
-            downloadLink.href = pngUrl;
-            downloadLink.download = `code_${document.getElementById('barcode-type').value}_${document.getElementById('barcode-text').value.trim()}.png`;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-        }
-
-        function exporterPDF() {
-            const canvas = document.getElementById('barcode-canvas');
-            if (!canvas || canvas.style.display === 'none') return;
-            window.print();
-        }
-
+        // Lancement forcé au chargement initial
         window.onload = function() {
             document.getElementById('barcode-type').dispatchEvent(new Event('change'));
         };
