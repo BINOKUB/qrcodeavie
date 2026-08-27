@@ -107,17 +107,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // On nettoie toutes les classes
             qrFrameWrapper.className = '';
             
-            if (styleChoisi === 'scan-me') {
+            if (styleChoisi === 'Scannez Pour Explorer') {
                 qrFrameWrapper.classList.add('frame-style-scan-me');
                 iconBottom.textContent = '📱';
-                labelBottom.textContent = 'Scan me';
+                labelBottom.textContent = 'Scannez Pour Explorer';
             } 
             else if (styleChoisi === 'get-app') {
                 qrFrameWrapper.classList.add('frame-style-get-app');
                 iconBottom.textContent = '🅰️'; // Icône d'application
                 labelBottom.textContent = 'Get the app';
             }
-            else if (styleChoisi === 'like-us') {
+            else if (styleChoisi === 'Suivez-Nous') {
                 qrFrameWrapper.classList.add('frame-style-like-us');
                 // L'icône du haut est déjà en dur dans le HTML (👍 Like us)
             }
