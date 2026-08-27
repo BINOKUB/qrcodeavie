@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=device-width, initial-scale=1.0">
-    <title>QR Code à Vie | Générateur Premium</title>
+    <title>QR Code à Vie | Générateur Premium JEVEND</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     
@@ -19,8 +17,6 @@
             navigator.serviceWorker.register('sw.js');
         }
     </script>
-
-
 </head>
 <body>
 
@@ -29,22 +25,24 @@
         <p data-lang="appSubtitle">Générateur Statique Premium. Aucun abonnement. 100% Privé.</p>
         <button id="lang-toggle" class="btn-lang">FR / EN</button>
 
-       <!-- Remplace ton bloc de lien actuel par celui-ci -->
-<div style="margin-top: 1.5rem;">
-    <a href="pourquoi.html" id="link-pourquoi" style="color: var(--mental-blue); text-decoration: underline; font-weight: 600; font-size: 1.1rem;" data-lang="linkPourquoi">
-        Pourquoi nous choisir ?  </a>
-<br />
-        <a href="qrcodeprix.html" id="link-pourquoi" style="color: var(--mental-blue); text-decoration: underline; font-weight: 600; font-size: 1.1rem;" data-lang="linkcodebarre">Code Barre Industriel</a>
-
-</div>
-
-        
+        <div style="margin-top: 1.5rem;">
+            <a href="pourquoi.html" id="link-pourquoi" style="color: var(--mental-blue); text-decoration: underline; font-weight: 600; font-size: 1.1rem;" data-lang="linkPourquoi">
+                Pourquoi nous choisir ?
+            </a>
+            <br />
+            <a href="qrcodeprix.html" id="link-codebarre" style="color: var(--mental-blue); text-decoration: underline; font-weight: 600; font-size: 1.1rem;" data-lang="linkcodebarre">Code Barre Industriel</a>
+        </div>
     </header>
 
     <main id="app-container">
         
         <section id="bloc-vente" class="active">
             <div class="lock-box">
+                <div class="banniere-promo-index">
+                    <p><strong>Garantie sans abonnement.</strong> Payez 50$ une fois, générez vos QR Codes à vie.</p>
+                    <span>⚡ ACCÈS ILLIMITÉ</span>
+                </div>
+
                 <h2 data-lang="lockTitle">Accès Sécurisé</h2>
                 <p data-lang="lockDesc">Entrez votre clé d'accès à vie pour utiliser le générateur.</p>
                 
@@ -56,7 +54,6 @@
                 
                 <a href="https://buy.stripe.com/fZu3cw6CD1rK1XI8erbsc0j" target="_blank" class="btn-stripe" data-lang="btnBuy">Acheter mon accès à vie (50$)</a>
             </div>
-          
         </section>
  
         <section id="bloc-generateur" style="display: none;">
@@ -72,7 +69,7 @@
                     </div>
 
                     <div id="tab-link" class="tab-content active">
-                        <input type="text" id="qr-url" data-lang="placeholderUrl" placeholder="ex: https://mon-site.com">
+                        <input type="text" id="qr-url" data-lang="placeholderUrl" placeholder="ex: https://jevend.com">
                     </div>
 
                     <div id="tab-wifi" class="tab-content">
@@ -125,12 +122,13 @@
                                 <option value="rounded" data-lang="optDots">Arrondis</option>
                             </select>
 
-                           <label>Style du Cadre :</label>
+                            <label>Style du Cadre :</label>
                             <select id="frame-style">
                                 <option value="none">Aucun</option>
-                                <option value="scan-me" selected>Cadre "Scan Me" (Bleu)</option>
-                                <option value="get-app">Cadre "Get the app" (Marine)</option>
-                                <option value="like-us">Cadre "Like us" (Turquoise)</option>
+                                <option value="scan-me" selected>Cadre "Scannez-moi"</option>
+                                <option value="facebook">Cadre "Facebook"</option>
+                                <option value="website">Cadre "Site Web"</option>
+                                <option value="get-app">Cadre "Application"</option>
                             </select>
                         </div>
                         
@@ -148,14 +146,13 @@
                     <div id="qr-frame-wrapper" class="frame-style-scan-me">
                         
                         <div class="frame-text-top" id="frame-text-top">
-                            <span id="frame-icon-top">f</span> <span id="frame-label-top">Suivez-Nous</span>
+                            <span id="frame-icon-top"></span> <span id="frame-label-top"></span>
                         </div>
 
-                        <div id="qrcode-canvas">
-                            </div>
+                        <div id="qrcode-canvas"></div>
                         
                         <div class="frame-text-bottom" id="frame-text-bottom">
-                            <span id="frame-icon-bottom">📱</span> <span id="frame-label-bottom">Scan me</span>
+                            <span id="frame-icon-bottom">📱</span> <span id="frame-label-bottom">Scannez-moi</span>
                         </div>
                     </div>
                     
