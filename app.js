@@ -1,12 +1,11 @@
-/* Révision v1.3 - Gestion Dynamique des Cadres et Export HD - app.js */
+/* Révision v1.5 - Nettoyage complet des textes et support Facebook / JEVEND - app.js */
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. Initialisation de la langue (depuis lang.js)
+    // 1. Initialisation de la langue
     if (typeof appliquerLangue === 'function') {
         appliquerLangue();
     }
 
-    // Bouton de changement de langue
     const btnLang = document.getElementById('lang-toggle');
     if (btnLang) {
         btnLang.addEventListener('click', () => {
@@ -15,50 +14,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- SECTION A :  ---
+    // --- SECTION A : GESTION DES ACCÈS ---
     const blocVente = document.getElementById('bloc-vente');
     const blocGenerateur = document.getElementById('bloc-generateur');
     const unlockBtn = document.getElementById('unlock-btn');
     const vipKeyInput = document.getElementById('vip-key');
     const errorMsg = document.getElementById('error-msg');
     
-    // Vérification silencieuse au chargement
     if (localStorage.getItem('qr_vip_access') === 'valide') {
-        blocVente.classList.remove('active');
-        blocGenerateur.style.display = 'block';
-        initialiserGenerateur(); // Démarre le moteur seulement si accès autorisé
+        if (blocVente) blocVente.classList.remove('active');
+        if (blocGenerateur) blocGenerateur.style.display = 'block';
+        initialiserGenerateur();
     }
 
-    // 
-    unlockBtn.addEventListener('click', () => {
-        const cleSaisie = vipKeyInput.value.trim();
-        
-        // 
-        if (cleSaisie.length >= 50) {
-            const prefixeCrypte = btoa(cleSaisie.substring(0, 7)); // 
-            
-            if (prefixeCrypte === 'UVItUFJPLQ==') {
-                // 
-                localStorage.setItem('qr_vip_access', 'valide');
-                blocVente.classList.remove('active');
-                blocGenerateur.style.display = 'block';
-                errorMsg.style.display = 'none';
-                initialiserGenerateur();
-                return;
+    if (unlockBtn) {
+        unlockBtn.addEventListener('click', () => {
+            const cleSaisie = vipKeyInput.value.trim();
+            if (cleSaisie.length >= 50) {
+                const prefixeCrypte = btoa(cleSaisie.substring(0, 7));
+                if (prefixeCrypte === 'UVItUFJPLQ==') {
+                    localStorage.setItem('qr_vip_access', 'valide');
+                    if (blocVente) blocVente.classList.remove('active');
+                    if (blocGenerateur) blocGenerateur.style.display = 'block';
+                    if (errorMsg) errorMsg.style.display = 'none';
+                    initialiserGenerateur();
+                    return;
+                }
             }
-        }
-        
-        // ECHEC : 
-        errorMsg.style.display = 'block';
-    });
+            if (errorMsg) errorMsg.style.display = 'block';
+        });
+    }
 
-    // --- SECTION B : LE MOTEUR DU GÉNÉRATEUR ---
+    // --- SECTION B : MOTEUR DU GÉNÉRATEUR ---
     function initialiserGenerateur() {
         
-        // Gestion des Onglets (Tabs)
         const tabBtns = document.querySelectorAll('.tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
-        let activeTab = 'tab-link'; // Par défaut
+        let activeTab = 'tab-link';
 
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -71,12 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Initialisation de la librairie QRCodeStyling
+        // Initialisation de la librairie QRCodeStyling avec URL JEVEND par défaut
         const qrCode = new QRCodeStyling({
-            width: 250, // Légèrement réduit pour bien s'intégrer dans le cadre
+            width: 250,
             height: 250,
-            type: "svg", // SVG interne pour la meilleure qualité d'affichage
-            data: "https://qrcodeavie.com",
+            type: "svg",
+            data: "https://jevend.com",
             image: "",
             dotsOptions: {
                 color: "#000000",
@@ -91,55 +83,78 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Affichage initial
-        qrCode.append(document.getElementById("qrcode-canvas"));
+        const canvasContainer = document.getElementById("qrcode-canvas");
+        if (canvasContainer) {
+            canvasContainer.innerHTML = '';
+            qrCode.append(canvasContainer);
+        }
 
-        // --- NOUVEAU : GESTION DYNAMIQUE DU CADRE ---
-       
+        // --- GESTION DYNAMIQUE DU CADRE ET TEXTES EN FRANÇAIS ---
         const frameStyleSelect = document.getElementById('frame-style');
         const qrFrameWrapper = document.getElementById('qr-frame-wrapper');
+        const iconTop = document.getElementById('frame-icon-top');
+        const labelTop = document.getElementById('frame-label-top');
         const iconBottom = document.getElementById('frame-icon-bottom');
         const labelBottom = document.getElementById('frame-label-bottom');
 
-        frameStyleSelect.addEventListener('change', (e) => {
-            const styleChoisi = e.target.value;
+        function appliquerStyleCadre(styleChoisi) {
+            const t = (typeof dictionnaire !== 'undefined' && dictionnaire[langueCourante]) ? dictionnaire[langueCourante] : {};
             
-            // On nettoie toutes les classes
+            if (!qrFrameWrapper) return;
             qrFrameWrapper.className = '';
             
-            if (styleChoisi === 'Scannez Pour Explorer') {
+            // Reinitialisation des zones
+            if (iconTop) iconTop.textContent = '';
+            if (labelTop) labelTop.textContent = '';
+            if (iconBottom) iconBottom.textContent = '';
+            if (labelBottom) labelBottom.textContent = '';
+
+            if (styleChoisi === 'scan-me') {
                 qrFrameWrapper.classList.add('frame-style-scan-me');
-                iconBottom.textContent = '📱';
-                labelBottom.textContent = 'Scannez Pour Explorer';
+                if (iconBottom) iconBottom.textContent = '📱';
+                if (labelBottom) labelBottom.textContent = t.frameScanMe || 'Scannez-moi';
             } 
+            else if (styleChoisi === 'facebook') {
+                qrFrameWrapper.classList.add('frame-style-facebook');
+                if (iconBottom) iconBottom.textContent = '📘';
+                if (labelBottom) labelBottom.textContent = t.frameFacebook || 'Suivez-nous sur Facebook';
+            }
+            else if (styleChoisi === 'website') {
+                qrFrameWrapper.classList.add('frame-style-website');
+                if (iconBottom) iconBottom.textContent = '🌐';
+                if (labelBottom) labelBottom.textContent = t.frameWebsite || 'Visiter le site web';
+            }
             else if (styleChoisi === 'get-app') {
                 qrFrameWrapper.classList.add('frame-style-get-app');
-                iconBottom.textContent = '🅰️'; // Icône d'application
-                labelBottom.textContent = 'Get the app';
+                if (iconBottom) iconBottom.textContent = '📱';
+                if (labelBottom) labelBottom.textContent = t.frameGetApp || 'Télécharger l\'application';
             }
-            else if (styleChoisi === 'Suivez-Nous') {
-                qrFrameWrapper.classList.add('frame-style-like-us');
-                // L'icône du haut est déjà en dur dans le HTML (👍 Like us)
-            }
-            // Si 'none', il reste sans classe (état brut)
-        });
+        }
 
+        if (frameStyleSelect) {
+            frameStyleSelect.addEventListener('change', (e) => {
+                appliquerStyleCadre(e.target.value);
+            });
+            // Application du style par défaut lors du chargement
+            appliquerStyleCadre(frameStyleSelect.value);
+        }
 
-
-        // Gestionnaire du logo (Upload local)
+        // Gestion du logo (Upload local)
         let logoBase64 = "";
         const logoInput = document.getElementById('logo-input');
-        logoInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    logoBase64 = event.target.result;
-                    mettreAJourQR(); // Met à jour automatiquement
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        if (logoInput) {
+            logoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        logoBase64 = event.target.result;
+                        mettreAJourQR();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
 
         // Fonction principale de mise à jour
         function mettreAJourQR() {
@@ -147,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (activeTab === 'tab-link') {
                 finalData = document.getElementById('qr-url').value.trim();
-                if (!finalData) finalData = "https://qrcodeavie.com";
+                if (!finalData) finalData = "https://jevend.com";
             } 
             else if (activeTab === 'tab-wifi') {
                 const ssid = document.getElementById('wifi-ssid').value.trim();
@@ -182,41 +197,34 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        document.getElementById('update-qr-btn').addEventListener('click', mettreAJourQR);
+        const updateBtn = document.getElementById('update-qr-btn');
+        if (updateBtn) updateBtn.addEventListener('click', mettreAJourQR);
 
-        // --- SECTION C : EXPORTATION AVEC HTML2CANVAS ---
-        
-        // Fonction globale de téléchargement d'image (Cadre Inclus)
-        // Fonction globale de téléchargement d'image (Cadre Inclus)
+        // --- EXPORTATION HAUTE DÉFINITION ---
         function telechargerCadre(format) {
             const wrapper = document.getElementById('qr-frame-wrapper');
-            
-            // L'astuce : Fond blanc forcé pour le JPG, Transparence préservée pour le PNG
             const couleurDeFond = format === 'jpg' ? '#ffffff' : null;
             
             html2canvas(wrapper, {
                 backgroundColor: couleurDeFond, 
-                scale: 3 // Échelle x3 pour une très haute définition
+                scale: 3
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `QR_Code_Premium.${format}`;
+                link.download = `QR_Code_JEVEND.${format}`;
                 const mimeType = format === 'jpg' ? 'jpeg' : 'png';
                 link.href = canvas.toDataURL(`image/${mimeType}`);
                 link.click();
             });
         }
 
-        document.getElementById('dl-png').addEventListener('click', () => {
-            telechargerCadre('png');
-        });
+        const dlPng = document.getElementById('dl-png');
+        const dlJpg = document.getElementById('dl-jpg');
+        const dlSvg = document.getElementById('dl-svg');
 
-        document.getElementById('dl-jpg').addEventListener('click', () => {
-            telechargerCadre('jpg');
-        });
-
-        // Le SVG exporte uniquement le vecteur pur pour les imprimeurs professionnels
-        document.getElementById('dl-svg').addEventListener('click', () => {
-            qrCode.download({ name: "QR_Code_Pur", extension: "svg" });
+        if (dlPng) dlPng.addEventListener('click', () => telechargerCadre('png'));
+        if (dlJpg) dlJpg.addEventListener('click', () => telechargerCadre('jpg'));
+        if (dlSvg) dlSvg.addEventListener('click', () => {
+            qrCode.download({ name: "QR_Code_JEVEND", extension: "svg" });
         });
     }
 });
